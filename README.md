@@ -7,9 +7,7 @@
  <img src="/imgs/grenade-in-elevator.gif">
 </p>
                                         
- From grenades to bloodthirsty spells throwing meteors from the sky! AoE meaning stands mainly for _“Area of Effect”_. It is a set of codes organized with their names and functions that define the range of attacks or spells.
-
-In other words, an attack, spell or function of your character **affects an area**, rather than just affecting one or more targets specifically or randomly.
+>From grenades to bloodthirsty spells throwing meteors from the sky! AoE meaning stands mainly for _“Area of Effect”_. It is a set of codes organized with their names and functions that define the range of attacks or spells. In other words, an attack, spell or function of your character **affects an area**, rather than just affecting one or more targets specifically or randomly.
 
 <p align="center">
  <img src="/imgs/bloodborne-aoe.gif">
