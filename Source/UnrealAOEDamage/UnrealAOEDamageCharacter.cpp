@@ -3,6 +3,7 @@
 #include "UnrealAOEDamageCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "HealthBarWidget.h"
+#include "UAOEGameStateBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -11,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AUnrealAOEDamageCharacter
@@ -87,6 +89,11 @@ void AUnrealAOEDamageCharacter::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAxis("TurnRate", this, &AUnrealAOEDamageCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AUnrealAOEDamageCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("DamageAction", IE_Pressed, this, &AUnrealAOEDamageCharacter::OnDamageActionPressed);
+	PlayerInputComponent->BindAction("HealAction", IE_Pressed, this, &AUnrealAOEDamageCharacter::OnHealActionPressed);
+
+	
 }
 
 void AUnrealAOEDamageCharacter::BeginPlay()
@@ -104,7 +111,9 @@ void AUnrealAOEDamageCharacter::BeginPlay()
 			HealthBar->HealthInterface = this;
 		}
 	}
-	
+
+	OnAoeSpawned.AddDynamic(this, &AUnrealAOEDamageCharacter::OnDamageActionAOESpawned);
+	OnHealAOESpawned.AddDynamic(this, &AUnrealAOEDamageCharacter::OnHealActionAOESpawned);
 	
 }
 
@@ -124,6 +133,39 @@ float AUnrealAOEDamageCharacter::GetHealthAsRatio()
 	return CurrentHealth / MaxHealth;
 }
 
+void AUnrealAOEDamageCharacter::OnDamageActionAOESpawned(AActor* HitActor)
+{
+
+	IDamageable* ActorToDamage = Cast<IDamageable>(HitActor);
+
+	if(ActorToDamage)
+	{
+		ActorToDamage->Damage(20.f);
+	}
+}
+
+void AUnrealAOEDamageCharacter::OnDamageActionPressed()
+{
+	
+	if(AUAOEGameStateBase* MyGameState = Cast<AUAOEGameStateBase>(UGameplayStatics::GetGameState(this)))
+		MyGameState->SpawnAOE(GetActorLocation(), 400.f, true, this, OnAoeSpawned, 2.5f, FColor::Red);
+}
+
+void AUnrealAOEDamageCharacter::OnHealActionPressed()
+{
+	if(AUAOEGameStateBase* MyGameState = Cast<AUAOEGameStateBase>(UGameplayStatics::GetGameState(this)))
+		MyGameState->SpawnAOE(GetActorLocation(), 400.f, false, nullptr, OnHealAOESpawned, 2.5f, FColor::Green);
+}
+
+void AUnrealAOEDamageCharacter::OnHealActionAOESpawned(AActor* HitActor)
+{
+	IDamageable* ActorToDamage = Cast<IDamageable>(HitActor);
+
+	if(ActorToDamage)
+	{
+		ActorToDamage->Heal(20.f);
+	}
+}
 
 
 void AUnrealAOEDamageCharacter::TurnAtRate(float Rate)

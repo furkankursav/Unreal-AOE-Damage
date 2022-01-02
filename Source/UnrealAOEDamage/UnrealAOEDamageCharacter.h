@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Damageable.h"
+#include "UAOEGameStateBase.h"
 #include "GameFramework/Character.h"
 #include "UnrealAOEDamageCharacter.generated.h"
 
@@ -92,5 +93,23 @@ public:
 	// Internal reference to the blueprint for gameplay logic
 	UPROPERTY(VisibleAnywhere ,BlueprintReadWrite, Category = "UI")
 	class UHealthBarWidget* HealthBar;
+
+
+	FOnAOESpawned OnAoeSpawned;
+
+	UFUNCTION()
+	void OnDamageActionAOESpawned(AActor* HitActor);
+	
+	UFUNCTION()
+	void OnDamageActionPressed();
+
+	UFUNCTION()
+	void OnHealActionPressed();
+
+
+	FOnAOESpawned OnHealAOESpawned;
+	
+	UFUNCTION()
+	void OnHealActionAOESpawned(AActor* HitActor);
 };
 
